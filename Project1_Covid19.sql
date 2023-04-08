@@ -1,3 +1,4 @@
+--Check if data is loaded 
 select * from CovidDeaths
 select * from CovidVaccinations
 
@@ -12,7 +13,7 @@ order by 1,2
 select location, date, total_cases, total_deaths, 
         round((total_deaths/total_cases) *100,2) as Death_Percentage
 from CovidDeaths
--- where location like '%States%'
+-- where location = '' --insert country name inside the '' for filter the data
 order by 1,2 
 
 -- Looking at Total Cases vs Population 
@@ -21,7 +22,7 @@ order by 1,2
 select location, date, population, total_cases, 
         round((total_cases/population)*100,2) as Death_Percentage
 from CovidDeaths
--- where location like '%States%' 
+-- where location = '' --insert country name inside the '' for filter the data
 
 -- Looking at Countries with Highest Infection Rate compared to Population 
 
@@ -30,6 +31,7 @@ select location,
         MAX((total_cases/population)*100) as percent_infection, 
         MAX(total_cases) as Highest_Infection_count
 from CovidDeaths
+-- where location = '' --insert country name inside the '' for filter the data
 group by location, population
 order by percent_infection DESC 
 
@@ -38,6 +40,7 @@ order by percent_infection DESC
 select location, population,
          max(total_deaths) as Total_Death_count 
 from CovidDeaths
+-- where location = '' --insert country name inside the '' for filter the data
 where continent is not null 
 group by location, population
 order by Total_Death_count DESC 
@@ -46,6 +49,7 @@ order by Total_Death_count DESC
 
 select continent, sum(total_deaths) as Total_Death
 from CovidDeaths
+-- where location = '' --insert country name inside the '' for filter the data
 where continent is not null 
 group by continent
 order by Total_Death DESC
@@ -56,6 +60,7 @@ select SUM(new_cases) as Number_of_Cases,
         SUM(cast(new_deaths as bigint)) as Number_of_Deaths, 
         round(SUM(cast(new_deaths as bigint))/SUM(new_cases)*100, 2) as Percentage_of_Death
 from CovidDeaths
+-- where location = '' --insert country name inside the '' for filter the data
 where continent is not null
 -- group by date
 order by 1,2
@@ -68,10 +73,11 @@ from CovidDeaths dea
 join CovidVaccinations vac
 on dea.location = vac.location
     and dea.date = vac.date
+-- where location = '' --insert country name inside the '' for filter the data
 where dea.continent is not null
 order by 2,3 
 
--- Creating View to store data for later visualization 
+-- Creating View to store data for later visualization using Tableu
 
 CREATE VIEW Percent_Population_Vaccinated as 
 select dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations, 
@@ -80,7 +86,10 @@ from CovidDeaths dea
 join CovidVaccinations vac
 on dea.location = vac.location
     and dea.date = vac.date
+-- where location = '' --insert country name inside the '' for filter the data
 where dea.continent is not null  
+
+-- Check if the table is created succesfully
 
 select * 
 from Percent_Population_Vaccinated 
